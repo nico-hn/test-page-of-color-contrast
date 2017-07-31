@@ -1,0 +1,13 @@
+.insufficient-contrast {
+    background: #ff5e5e;
+}
+
+.color-list thead,
+.color-list tbody {
+    display: block;
+}
+
+.color-list tbody {
+    max-height: 40em;
+    overflow-y: scroll;
+}

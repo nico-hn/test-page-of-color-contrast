@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="UTF-8" />
+<title>ColorContrastCalc Demo</title>
+<link href="css/default.css" rel="stylesheet" type="text/css" />
+<script src="https://unpkg.com/vue"></script>
+<script src="js/color-contrast-calc-es6.js"></script>
+</head>
+<body>
+<template id="color-table-header">
+  <thead>
+    <tr>
+      <th scope="col">hue</th>
+      <th scope="col">name</th>
+      <th scope="col">Level</th>
+      <th scope="col">hex</th>
+      <th scope="col">Contrast</th>
+      <th scope="col">A</th>
+      <th scope="col">A hex</th>
+      <th scope="col">A gray</th>
+      <th scope="col">A Contrast</th>
+      <th scope="col">AA</th>
+      <th scope="col">AA hex</th>
+      <th scope="col">AA gray</th>
+      <th scope="col">AA Contrast</th>
+      <th scope="col">AAA</th>
+      <th scope="col">AAA hex</th>
+      <th scope="col">AAA gray</th>
+      <th scope="col">AAA Contrast</th>
+    </tr>
+  </thead>
+</template>
+
+<template id="color-row">
+    <tr>
+      <td>{{i}}</td>
+      <td>{{color.name}}</td>
+      <td :class="origContrastStyle">{{color.origContrastLevel}}</td>
+      <td :style="origStyle">{{color.hex}}</td>
+      <td>{{color.origContrast}}</td>
+      <td :class="aContrastStyle">{{color.a.hasSufficientContrast}}</td>
+      <td :style="aStyle">{{color.a.hex}}</td>
+      <td :style="aGrayStyle">{{color.a.hex}}</td>
+      <td>{{color.a.contrast}}</td>
+      <td :class="aaContrastStyle">{{color.aa.hasSufficientContrast}}</td>
+      <td :style="aaStyle">{{color.aa.hex}}</td>
+      <td :style="aaGrayStyle">{{color.aa.hex}}</td>
+      <td>{{color.aa.contrast}}</td>
+      <td :class="aaaContrastStyle">{{color.aaa.hasSufficientContrast}}</td>
+      <td :style="aaaStyle">{{color.aaa.hex}}</td>
+      <td :style="aaaGrayStyle">{{color.aaa.hex}}</td>
+      <td>{{color.aaa.contrast}}</td>
+    </tr>
+</template>
+
+<section class="h1">
+<h1> ColorContrastCalc Demo
+</h1>
+
+<h2>Choose a base color</h2>
+
+<div id="color-table">
+  <form v-on:submit.prevent>
+    <table>
+      <caption>Propeties of colors</caption>
+      <tr>
+        <th scope="row">
+          <label for="base-color-input">Base:</label>
+        </th>
+        <td>
+          <input type="color" id="base-color-input"
+                 v-model="base"
+                 v-bind:title="base"
+                 v-on:change="updateList" />
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">
+          <label for="saturation-input">Saturation:</label>
+        </th>
+        <td>
+          <input id="saturation-input"
+                 v-model:number="saturation"
+                 v-on:keyup.enter="updateList" />
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">
+          <label for="lightness-input">Lightness:</label>
+        </th>
+        <td>
+          <input id="lightness-input"
+                 v-model:number="lightness"
+                 v-on:keyup.enter="updateList" />
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">
+          Base color:
+        </th>
+        <td>
+          <label for="base-foreground">Foreground</label>
+          <input type="radio" id="base-foreground" v-on:click="updateList" v-bind:value="false" v-model="baseColorToggle" />
+          <label for="base-background">Background</label>
+          <input type="radio" id="base-background" v-on:click="updateList" v-bind:value="true" v-model="baseColorToggle" />
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">
+          Adjust:
+        </th>
+        <td>
+          <select v-model="adjust" v-on:change="updateList">
+            <option>Brightness</option>
+            <option>Lightness</option>
+          </select>
+        </td>
+      </tr>
+    </table>
+  </form>
+
+  <table class="color-list" id="color-list">
+  <caption>List of brightness adjusted colors against {{base.toString()}}</caption>
+  <thead is="color-table-header"></thead>
+  <tbody>
+    <tr is="color-row" v-for="(color, i) in colors" :color="color" :i="i" :base="base" :base-gray="baseGray" :base-color-toggle="baseColorToggle"></tr>
+  </tbody>
+  </table>
+</div>
+
+  <h2>List from same foreground/background colors</h2>
+
+<div id="same-color-table">
+  <form v-on:submit.prevent>
+    <table>
+      <caption>Propeties of colors</caption>
+      <tr>
+        <th scope="row">
+          <label for="saturation-input">Saturation:</label>
+        </th>
+        <td>
+          <input id="saturation-input"
+                 v-model:number="saturation"
+                 v-on:keyup.enter="updateList" />
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">
+          <label for="lightness-input">Lightness:</label>
+        </th>
+        <td>
+          <input id="lightness-input"
+                 v-model:number="lightness"
+                 v-on:keyup.enter="updateList" />
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">
+          Base color:
+        </th>
+        <td>
+          <label for="base-foreground">Foreground</label>
+          <input type="radio" id="base-foreground" v-on:click="updateList" v-bind:value="false" v-model="baseColorToggle" />
+          <label for="base-background">Background</label>
+          <input type="radio" id="base-background" v-on:click="updateList" v-bind:value="true" v-model="baseColorToggle" />
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">
+          Adjust:
+        </th>
+        <td>
+          <select v-model="adjust" v-on:change="updateList">
+            <option>Brightness</option>
+            <option>Lightness</option>
+          </select>
+        </td>
+      </tr>
+    </table>
+  </form>
+
+  <table class="color-list" id="same-color-list">
+  <caption>List of brightness adjusted colors</caption>
+  <thead is="color-table-header"></thead>
+  <tbody>
+    <tr is="color-row" v-for="(color, i) in colors" :color="color" :i="i" :base="color.hex" :base-gray="color.origGray" :base-color-toggle="baseColorToggle"></tr>
+  </tbody>
+  </table>
+</div>
+<!-- end of h1 -->
+</section>
+<script src="js/demo.js"></script>
+</body>
+</html>
