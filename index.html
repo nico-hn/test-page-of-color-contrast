@@ -35,7 +35,7 @@
 
 <template id="color-row">
     <tr>
-      <td>{{i}}</td>
+      <td>{{colorIndex(i)}}</td>
       <td>{{color.name}}</td>
       <td :class="origContrastStyle">{{color.origContrastLevel}}</td>
       <td :style="origStyle">{{color.hex}}</td>
@@ -53,6 +53,19 @@
       <td :style="aaaGrayStyle">{{color.aaa.hex}}</td>
       <td>{{color.aaa.contrast}}</td>
     </tr>
+</template>
+
+<template id="common-inputs">
+      <tr>
+        <th scope="row">
+          Adjust:
+        </th>
+        <td>
+          <select v-model="adjust" @change="updateAdjustMethod">
+            <option v-for="option in options" :value="option.value">{{option.text}}</option>
+          </select>
+        </td>
+      </tr>
 </template>
 
 <section class="h1">
@@ -107,17 +120,7 @@
           <input type="radio" id="base-background" v-on:click="updateList" v-bind:value="true" v-model="baseColorToggle" />
         </td>
       </tr>
-      <tr>
-        <th scope="row">
-          Adjust:
-        </th>
-        <td>
-          <select v-model="adjust" v-on:change="updateList">
-            <option>Brightness</option>
-            <option>Lightness</option>
-          </select>
-        </td>
-      </tr>
+      <tr is="common-inputs" :adjust.sync="adjust" v-on:update:adjust="updateList"></tr>
     </table>
   </form>
 
@@ -167,17 +170,7 @@
           <input type="radio" id="base-background" v-on:click="updateList" v-bind:value="true" v-model="baseColorToggle" />
         </td>
       </tr>
-      <tr>
-        <th scope="row">
-          Adjust:
-        </th>
-        <td>
-          <select v-model="adjust" v-on:change="updateList">
-            <option>Brightness</option>
-            <option>Lightness</option>
-          </select>
-        </td>
-      </tr>
+      <tr is="common-inputs" :adjust.sync="adjust" v-on:update:adjust="updateList"></tr>
     </table>
   </form>
 
@@ -186,6 +179,56 @@
   <thead is="color-table-header"></thead>
   <tbody>
     <tr is="color-row" v-for="(color, i) in colors" :color="color" :i="i" :base="color.hex" :base-gray="color.origGray" :base-color-toggle="baseColorToggle"></tr>
+  </tbody>
+  </table>
+</div>
+
+  <h2>List of complementary colors</h2>
+
+<div id="complementary-color-table">
+  <form v-on:submit.prevent>
+    <table>
+      <caption>Propeties of colors</caption>
+      <tr>
+        <th scope="row">
+          <label for="saturation-input">Saturation:</label>
+        </th>
+        <td>
+          <input id="saturation-input"
+                 v-model:number="saturation"
+                 v-on:keyup.enter="updateList" />
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">
+          <label for="lightness-input">Lightness:</label>
+        </th>
+        <td>
+          <input id="lightness-input"
+                 v-model:number="lightness"
+                 v-on:keyup.enter="updateList" />
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">
+          Base color:
+        </th>
+        <td>
+          <label for="base-foreground">Foreground</label>
+          <input type="radio" id="base-foreground" v-on:click="updateList" v-bind:value="false" v-model="baseColorToggle" />
+          <label for="base-background">Background</label>
+          <input type="radio" id="base-background" v-on:click="updateList" v-bind:value="true" v-model="baseColorToggle" />
+        </td>
+      </tr>
+      <tr is="common-inputs" :adjust.sync="adjust" v-on:update:adjust="updateList"></tr>
+    </table>
+  </form>
+
+  <table class="color-list" id="same-color-list">
+  <caption>List of brightness adjusted colors</caption>
+  <thead is="color-table-header"></thead>
+  <tbody>
+    <tr is="color-row" v-for="(color, i) in colors" :color="color" :i="i" :base="color.complementaryHex" :base-gray="color.origGray" :base-color-toggle="baseColorToggle"></tr>
   </tbody>
   </table>
 </div>
